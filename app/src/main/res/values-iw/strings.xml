@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">תנ\"ך יומי</string>
+    <string name="when_to_fire_alarm">מתי להפעיל התראה</string>
+    <string name="notification" translatable="false">התראות</string>
+    <string name="setting" translatable="false">הגדרות</string>
+    <string name="loading">טוען</string>
+    <string name="dialogText">ברכות על הצטרפותך לקריאת התנ"ך היומי
+סיום כל התנ"ך בשנה אחת - על פי המסורה\n
+בהצלחה!\n
+        \n\nלשם הגדרת תזכורת יומית יש ללחוץ על ⚙ בתחתית המסך
+    </string>
+    <string name="dialog_ok">בסדר</string>
+    <string name="dialog_title">ברוכים הבאים</string>
+    <string name="Important_massage"><u>חשוב לדעת!</u></string>
+    <string name="important_dialog_title">חשוב לדעת</string>
+    <string name="important_dialogText">בחלק מהפלפונים <b>כדי שההתראות יעבדו אחרי כיבוי של הפלאפון </b>צריך להפעיל את האופציה \"הפעלה אוטומטית\" בפרטי האפליקציה.</string>
+    <string name="for_info_important_dialog">אל \"פרטי האפליקציה\"</string>
+
+</resources>
