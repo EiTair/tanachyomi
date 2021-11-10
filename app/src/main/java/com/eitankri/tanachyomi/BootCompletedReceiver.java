@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-
 import java.util.Calendar;
 
 public class BootCompletedReceiver extends BroadcastReceiver {
