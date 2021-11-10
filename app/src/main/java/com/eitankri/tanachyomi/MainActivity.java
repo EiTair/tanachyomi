@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         WebView mWebView = findViewById(R.id.webViewMikveSearch);
         mWebView.loadUrl("https://www.tanachyomi.co.il/");
         mWebView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setBuiltInZoomControls(true);
                 mWebView.setWebViewClient(new WebViewClient() {
                     @Override
                     public void onPageFinished(WebView view, String url) {
