@@ -108,7 +108,7 @@ public class SettingActivity extends AppCompatActivity {
                 if(calendar.before(Calendar.getInstance())){
                     calendar.add(Calendar.DAY_OF_MONTH,1);
                 }
-                        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, PendingIntent.FLAG_IMMUTABLE);
                 alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
 
 

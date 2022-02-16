@@ -29,7 +29,7 @@ public class reminderBroadcast extends BroadcastReceiver {
                 Intent notificationIntent = new Intent(context, MainActivity.class);
                 PendingIntent contentIntent = PendingIntent.getActivity(context,
                         10, notificationIntent,
-                      0);
+                      PendingIntent.FLAG_IMMUTABLE);
 
                 notification = new NotificationCompat.Builder(context, CHANNEL_2_ID)
                         .setAutoCancel(true)

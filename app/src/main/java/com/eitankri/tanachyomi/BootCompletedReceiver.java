@@ -25,7 +25,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
                 , sharedpreferences.getInt("notifyHour", 0), sharedpreferences.getInt("notifyMinute", 1));
 
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, NotIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, NotIntent, PendingIntent.FLAG_IMMUTABLE);
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
 
 

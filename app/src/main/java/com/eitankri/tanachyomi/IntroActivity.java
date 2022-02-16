@@ -72,13 +72,13 @@ public class IntroActivity extends AppCompatActivity {
                     , sharedpreferences.getInt("notifyHour", 0), sharedpreferences.getInt("notifyMinute", 1));
 
 
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, NotIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, NotIntent,PendingIntent.FLAG_IMMUTABLE);
             alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
         }
     }
     public static boolean isAlarmUp(Context context, int request) {
         Intent myIntent = new Intent(context, reminderBroadcast.class);
-        return PendingIntent.getBroadcast(context, request, myIntent, PendingIntent.FLAG_NO_CREATE) != null;
+        return PendingIntent.getBroadcast(context, request, myIntent, PendingIntent.FLAG_IMMUTABLE) != null;
     }
 }
 

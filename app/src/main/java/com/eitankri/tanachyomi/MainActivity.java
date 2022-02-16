@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                             //כדי שלא תקפוץ התראה שפותח פעם ראשונה
                             calendar.add(Calendar.DAY_OF_MONTH,1);
 
-                            pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+                            pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent,PendingIntent.FLAG_IMMUTABLE);
                             alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
 
 
