@@ -44,6 +44,16 @@ public class SettingActivity extends AppCompatActivity {
         Button buttonSettingSetAlarmTime = findViewById(R.id.buttonSettingSetAlarmTime);
         TextView textViewImportantMassage = findViewById(R.id.textViewImportantMassage);
         ConstraintLayout notificationLayout = findViewById(R.id.notifactionLayout);
+
+        Button button_toDonate = findViewById(R.id.button_toDonate);
+
+        button_toDonate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.tanachyomi.co.il/%D7%AA%D7%A8%D7%95%D7%9E%D7%94_%D7%9C%D7%90%D7%AA%D7%A8"));
+                startActivity(browserIntent);
+            }
+        });
         //מקבל את הגובה של הגדרות של התראות כשהוא עותף את הטקסט
         //כדי לחזור אליו
         notificationLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
