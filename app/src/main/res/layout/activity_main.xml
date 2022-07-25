@@ -18,6 +18,18 @@
         app:layout_constraintStart_toStartOf="parent"
          />
 
+    <Button
+        android:id="@+id/buttonToDonate"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="לתרומה באתר"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/floatingActionButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/floatingActionButton" />
+
     <WebView
         android:id="@+id/webViewMikveSearch"
         android:layout_width="fill_parent"

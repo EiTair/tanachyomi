@@ -4,13 +4,19 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.DownloadListener;
+import android.webkit.URLUtil;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -18,6 +24,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.net.CookieManager;
 import java.util.Calendar;
 
 import hotchemi.android.rate.AppRate;
@@ -35,7 +42,10 @@ public class MainActivity extends AppCompatActivity {
         String mPreference = "mPreference";
         SharedPreferences sharedpreferences = getSharedPreferences(mPreference,
                 Context.MODE_PRIVATE);
-
+        findViewById(R.id.buttonToDonate).setOnClickListener(v -> {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.tanachyomi.co.il/%D7%AA%D7%A8%D7%95%D7%9E%D7%94_%D7%9C%D7%90%D7%AA%D7%A8"));
+            startActivity(browserIntent);
+        });
         findViewById(R.id.floatingActionButton).setOnClickListener(v -> {
 
 
@@ -49,7 +59,17 @@ public class MainActivity extends AppCompatActivity {
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.getSettings().setDisplayZoomControls(false);
-                mWebView.setWebViewClient(new WebViewClient() {
+
+        mWebView.setDownloadListener(new DownloadListener() {
+            public void onDownloadStart(String url, String userAgent,
+                                        String contentDisposition, String mimetype,
+                                        long contentLength) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            }
+        });
+        mWebView.setWebViewClient(new WebViewClient() {
                     @Override
                     public void onPageFinished(WebView view, String url) {
                         mWebView.loadUrl("javascript:(function() { " +
@@ -59,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
                         findViewById(R.id.view).setVisibility(View.INVISIBLE);
                         findViewById(R.id.textView8).setVisibility(View.INVISIBLE);
                         findViewById(R.id.floatingActionButton).setVisibility(View.VISIBLE);
+                        findViewById(R.id.buttonToDonate).setVisibility(View.VISIBLE);
                         if (sharedpreferences.getBoolean("firstTime", true)) {
                             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                             Intent intent = new Intent(getApplicationContext(), reminderBroadcast.class);
