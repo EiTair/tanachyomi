@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -49,11 +48,7 @@ public class IntroActivity extends AppCompatActivity {
         });
         //כאשר סוגרים את האפליקציה דרך המסך הראשי הוא עובר לכאן ומכאן שוב יוצא
         if (getIntent().getBooleanExtra("EXIT", false)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                finishAndRemoveTask();
-            }else{
-                finish();
-            }
+            finishAndRemoveTask();
 
         }
     }
@@ -73,7 +68,7 @@ public class IntroActivity extends AppCompatActivity {
 
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, NotIntent,PendingIntent.FLAG_IMMUTABLE);
-            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
         }
     }
     public static boolean isAlarmUp(Context context, int request) {
