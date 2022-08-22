@@ -16,5 +16,6 @@
     <string name="important_dialog_title">חשוב לדעת</string>
     <string name="important_dialogText">בחלק מהפלפונים <b>כדי שההתראות יעבדו אחרי כיבוי של הפלאפון </b>צריך להפעיל את האופציה \"הפעלה אוטומטית\" בפרטי האפליקציה.</string>
     <string name="for_info_important_dialog">אל \"פרטי האפליקציה\"</string>
+    <string name="isStudent">התראות מתואמות לתוכנית התלמידים</string>
 
 </resources>

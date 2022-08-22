@@ -1,87 +1,115 @@
 package com.eitankri.tanachyomi;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 
 public class ParekYomiCalculator {
     private static final String[] sfarim = {"יהושע", "שופטים", "שמואל", "מלכים", "ישעיהו", "ירמיהו", "יחזקאל", "תרי עשר", "תהילים"
             , "משלי", "איוב", "שיר השירים", "רות", "איכה", "קהלת", "אסתר", "דניאל", "עזרא ונחמיה", "דברי הימים", "דברי הימים"};
-    private  static  final int[] howMuchinSefer = {14, 14, 34, 35, 26, 31, 29, 21, 19
+    private static final int[] howMuchinSefer = {14, 14, 34, 35, 26, 31, 29, 21, 19
             , 8, 8, 1, 1, 1, 4, 5, 7, 10, 25};
-    ArrayList<String> holidays = new ArrayList<>(List.of("פסח", "שבועות", "תשעה באב",
-            "ראש השנה", "סוכות", "שמיני עצרת", "יום כיפור", "פורים", "יום העצמאות"));
+    ArrayList<String> holidays = new ArrayList<>(
+            Arrays.asList("פסח", "שבועות", "תשעה באב",
+                    "ראש השנה", "סוכות", "שמיני עצרת", "יום כיפור", "פורים", "יום העצמאות"));
+
 
     public String getParekYomi(JewishCalendar todayDate) {
+        boolean isStudent = MainActivity.getIfStudent();
         //כדי לקבל הכל בעברית
         HebrewDateFormatter hebrewDateFormatter = new HebrewDateFormatter();
         hebrewDateFormatter.setHebrewFormat(true);
-
-        //אם היום הנוכחי הוא חודש שלא קוראים בו אז אני מחזיר כבר ערך
-        if (holidays.contains(hebrewDateFormatter.formatYomTov(todayDate))) {
-            return "היום " + hebrewDateFormatter.formatYomTov(todayDate) + " לכן לא קוראים היום";
-        }
         //כאן מכניס את כל הפרקים שיש בשנה כולל השינויים
         ArrayList<String> allPrakim = new ArrayList<>();
+        int countDays = 0;//סופר את הימים שקוראים בהם
 
-        int extraDays;//הימים הנוספים ללא הימים שנוספים מהחודש מעובר
-        //בודק אם מדובר לפני כג תשרי ואז מראה שמדובר בסבב של שנה קודמת
-        if(todayDate.getJewishMonth() == 7 && todayDate.getJewishDayOfMonth() < 23) {
-            todayDate.setJewishYear(todayDate.getJewishYear() - 1);
-        }
-        //מקבל 0-4 תלוי כמה ימים נופלים על שבתות
-        extraDays = getExtraDays(todayDate);
 
-        //רץ על כל הספרים מספר הפרקים שבו
-        for (int i = 0; i < sfarim.length - 1; i++) {
-            for (int j = 0; j < howMuchinSefer[i]; j++) {
-                //לפי מספר הימים שצריך להוסיף את מחכה לפרק ואז מוסיף מה שמוסיף
-                //בכוונה גדול אחד מהשני כי כך יכול לרוץ על כמה
-                if (sfarim[i].equals("רות") && extraDays > 0) {
-                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
-                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
-                } else if (sfarim[i].equals("שיר השירים") && extraDays > 1) {
-                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
-                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
+            //אם היום הנוכחי הוא חודש שלא קוראים בו אז אני מחזיר כבר ערך
+            if (holidays.contains(hebrewDateFormatter.formatYomTov(todayDate))) {
+                return "היום " + hebrewDateFormatter.formatYomTov(todayDate) + " לכן לא קוראים היום";
+            }
 
-                } else if (sfarim[i].equals("ירמיהו") && extraDays > 2 && j == 8) {
-                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
-                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
 
-                } else if (sfarim[i].equals("יהושע") && extraDays > 3 && j == 3) {
-                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
-                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
+            int extraDays;//הימים הנוספים ללא הימים שנוספים מהחודש מעובר
+            //בודק אם מדובר לפני כג תשרי ואז מראה שמדובר בסבב של שנה קודמת
+            if (todayDate.getJewishMonth() == 7 && todayDate.getJewishDayOfMonth() < 23) {
+                todayDate.setJewishYear(todayDate.getJewishYear() - 1);
+            }
+            //מקבל 0-4 תלוי כמה ימים נופלים על שבתות
+            extraDays = (isStudent)?0:getExtraDays(todayDate);
 
-                } else {
-                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1));
+            //רץ על כל הספרים מספר הפרקים שבו
+            for (int i = 0; i < sfarim.length - 1; i++) {
+                for (int j = 0; j < howMuchinSefer[i]; j++) {
+                    //לפי מספר הימים שצריך להוסיף את מחכה לפרק ואז מוסיף מה שמוסיף
+                    //בכוונה גדול אחד מהשני כי כך יכול לרוץ על כמה
+                    if (sfarim[i].equals("רות") && extraDays > 0) {
+                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
+                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
+                    } else if (sfarim[i].equals("שיר השירים") && extraDays > 1) {
+                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
+                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
+
+                    } else if (sfarim[i].equals("ירמיהו") && extraDays > 2 && j == 8) {
+                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
+                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
+
+                    } else if (sfarim[i].equals("יהושע") && extraDays > 3 && j == 3) {
+                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
+                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
+
+                    } else {
+                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1));
+                    }
                 }
             }
-        }
-        //אם שנה מעוברת אז מוסיף עוד דברי הימים
-        if (JewishCalendar.isJewishLeapYear(todayDate.getJewishYear())) {
-            for (int i = 0; i < howMuchinSefer[howMuchinSefer.length - 1]; i++) {
-                allPrakim.add("" + sfarim[howMuchinSefer.length - 1] + " " + hebrewDateFormatter.formatHebrewNumber(i + 1) + "*");
+
+
+        if (!isStudent) {
+
+            //אם שנה מעוברת אז מוסיף עוד דברי הימים
+            if (JewishCalendar.isJewishLeapYear(todayDate.getJewishYear())) {
+                for (int i = 0; i < howMuchinSefer[howMuchinSefer.length - 1]; i++) {
+                    allPrakim.add("" + sfarim[howMuchinSefer.length - 1] + " " + hebrewDateFormatter.formatHebrewNumber(i + 1) + "*");
+                }
+            }
+
+            //תחילת הסבב כג תשרי
+            JewishCalendar beginningsDate = new JewishCalendar();
+            beginningsDate.setJewishDate(todayDate.getJewishYear(), 7, 23, 0, 0, 0);
+
+
+            while (!(beginningsDate.getJewishMonth() == todayDate.getJewishMonth()
+                    && beginningsDate.getJewishDayOfMonth() == todayDate.getJewishDayOfMonth())) {
+                if (beginningsDate.getDayOfWeek() == Calendar.SATURDAY) {
+                } else if (holidays.contains(hebrewDateFormatter.formatYomTov(beginningsDate))) {
+                } else {
+                    countDays++;
+                }
+                beginningsDate.forward(Calendar.DAY_OF_MONTH, 1);
+            }
+        }else {
+            Calendar beginningsDate = Calendar.getInstance();
+            beginningsDate.set((beginningsDate.get(Calendar.MONTH) < 9) ? beginningsDate.get(Calendar.YEAR) - 1 : beginningsDate.get(Calendar.YEAR), 9, 1);
+
+            while (!(beginningsDate.get(Calendar.MONTH) == todayDate.getGregorianCalendar().get(Calendar.MONTH)
+                    && beginningsDate.get(Calendar.DAY_OF_MONTH) == todayDate.getGregorianCalendar().get(Calendar.DAY_OF_MONTH))) {
+
+                if (!holidays.contains(hebrewDateFormatter.formatYomTov(new JewishCalendar(beginningsDate)))) {
+                    countDays++;
+                }
+                beginningsDate.add(Calendar.DAY_OF_MONTH, 1);
             }
         }
-        //תחילת הסבב כג תשרי
-        JewishCalendar beginningsDate = new JewishCalendar();
-        beginningsDate.setJewishDate(todayDate.getJewishYear(), 7, 23, 0, 0, 0);
 
-
-
-        int countDays = 0;//סופר את הימים שהם לא חג או שבת
-        while (!(beginningsDate.getJewishMonth() == todayDate.getJewishMonth()
-                && beginningsDate.getJewishDayOfMonth() == todayDate.getJewishDayOfMonth())) {
-            if (beginningsDate.getDayOfWeek() == Calendar.SATURDAY) {
-            } else if (holidays.contains(hebrewDateFormatter.formatYomTov(beginningsDate))) {
-            } else {
-                countDays++;
-            }
-            beginningsDate.forward(Calendar.DAY_OF_MONTH, 1);
-        }
         //מחזיר את הפרק לפי היום הימים שצריך לקרוא שספרנו
+        if (countDays>allPrakim.size()){
+            return "";
+
+        }
         return "סדר הקריאה היומי הוא: " + allPrakim.get(countDays);
     }
+
     //מקבל מספר ימים נוספים שנוצרים מכך שחג נופל על שבת
     private int getExtraDays(JewishCalendar jewishCalendar) {
         //הנוסחה היא האם שנה מעוברת -> באיזה יום חל ראש השנה של שנה הבאה

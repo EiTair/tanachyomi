@@ -16,7 +16,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.webkit.CookieManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -40,12 +42,13 @@ public class SettingActivity extends AppCompatActivity {
 
 
 
-        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch switchSettingToNotify = findViewById(R.id.switchSettingToNotifi);
+        com.google.android.material.switchmaterial.SwitchMaterial switchSettingToNotify = findViewById(R.id.switchSettingToNotifi);
         Button buttonSettingSetAlarmTime = findViewById(R.id.buttonSettingSetAlarmTime);
+         com.google.android.material.switchmaterial.SwitchMaterial switchIsStudent = findViewById(R.id.switchIsStudent);
         TextView textViewImportantMassage = findViewById(R.id.textViewImportantMassage);
         ConstraintLayout notificationLayout = findViewById(R.id.notifactionLayout);
 
-
+        switchIsStudent.setChecked(MainActivity.getIfStudent());
         //מקבל את הגובה של הגדרות של התראות כשהוא עותף את הטקסט
         //כדי לחזור אליו
         notificationLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -127,6 +130,7 @@ public class SettingActivity extends AppCompatActivity {
 
 
         });
+
         //הסוויץ בין להפעיל ללכבות התראות
         switchSettingToNotify.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
@@ -139,6 +143,8 @@ public class SettingActivity extends AppCompatActivity {
             editor.putBoolean("toNotify",isChecked);
             editor.apply();
         });
+
+
     }
     public static void slideView(View view, int currentHeight, int newHeight) {
 

@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -33,7 +34,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+
         String mPreference = "mPreference";
+        String mURL = "https://www.tanachyomi.co.il/";
+
+
         SharedPreferences sharedpreferences = getSharedPreferences(mPreference,
                 Context.MODE_PRIVATE);
         findViewById(R.id.buttonToDonate).setOnClickListener(v -> {
@@ -47,12 +52,14 @@ public class MainActivity extends AppCompatActivity {
             startActivity(startActivity);
         });
 
-
         WebView mWebView = findViewById(R.id.webViewMikveSearch);
-        mWebView.loadUrl("https://www.tanachyomi.co.il/");
+        mWebView.loadUrl(mURL);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.getSettings().setDisplayZoomControls(false);
+
+
+
 
         mWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
             Intent i = new Intent(Intent.ACTION_VIEW);
@@ -60,47 +67,46 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         });
         mWebView.setWebViewClient(new WebViewClient() {
-                    @Override
-                    public void onPageFinished(WebView view, String url) {
-                        mWebView.loadUrl("javascript:(function() { " +
-                                "document.getElementsByClassName(' hideOnLG')[0].style.display='none'; })()");
+            @Override
+            public void onPageFinished(WebView view, String url) {
 
-                        findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-                        findViewById(R.id.view).setVisibility(View.INVISIBLE);
-                        findViewById(R.id.textView8).setVisibility(View.INVISIBLE);
-                        findViewById(R.id.floatingActionButton).setVisibility(View.VISIBLE);
-                        findViewById(R.id.buttonToDonate).setVisibility(View.VISIBLE);
-                        if (sharedpreferences.getBoolean("firstTime", true)) {
-                            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                            Intent intent = new Intent(getApplicationContext(), reminderBroadcast.class);
-                            PendingIntent pendingIntent;
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0, 1, 0);
-                            //כדי שלא תקפוץ התראה שפותח פעם ראשונה
-                            calendar.add(Calendar.DAY_OF_MONTH,1);
+                mWebView.loadUrl("javascript:(function() { " +
+                        "document.getElementsByClassName(' hideOnLG')[0].style.display='none'; })()");
 
-                            pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent,PendingIntent.FLAG_IMMUTABLE);
-                            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
+                findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+                findViewById(R.id.view).setVisibility(View.INVISIBLE);
+                findViewById(R.id.textView8).setVisibility(View.INVISIBLE);
+                findViewById(R.id.floatingActionButton).setVisibility(View.VISIBLE);
+                findViewById(R.id.buttonToDonate).setVisibility(View.VISIBLE);
+                if (sharedpreferences.getBoolean("firstTime", true)) {
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    Intent intent = new Intent(getApplicationContext(), reminderBroadcast.class);
+                    PendingIntent pendingIntent;
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0, 1, 0);
+                    //כדי שלא תקפוץ התראה שפותח פעם ראשונה
+                    calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+                    pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, PendingIntent.FLAG_IMMUTABLE);
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
 
 
+                    SharedPreferences.Editor editor = sharedpreferences.edit();
+                    editor.putInt("notifyHour", 0);
+                    editor.putInt("notifyMinute", 1);
+                    editor.putBoolean("firstTime", false);
+                    editor.putBoolean("toNotify", true);
+                    editor.apply();
 
-
-                            SharedPreferences.Editor editor = sharedpreferences.edit();
-                            editor.putInt("notifyHour",0);
-                            editor.putInt("notifyMinute",1);
-                            editor.putBoolean("firstTime", false);
-                            editor.putBoolean("toNotify", true);
-                            editor.apply();
-
-                            FirstTimeDialog Dialog = new FirstTimeDialog(MainActivity.this);
-                           Dialog.show();
-                        } else {
-                            if (url.equals("https://www.tanachyomi.co.il/")) {
-                                  mWebView.scrollBy(0, 2400);
-                            }
-
-                        }
+                    FirstTimeDialog Dialog = new FirstTimeDialog(MainActivity.this);
+                    Dialog.show();
+                } else {
+                    if (url.equals("https://www.tanachyomi.co.il/")) {
+                        mWebView.scrollBy(0, 2400);
                     }
+
+                }
+            }
         });
 
     }
@@ -163,5 +169,27 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+    }
+    public static Boolean getIfStudent(){
+        String CookieValue = "";
+        String siteName = "https://www.tanachyomi.co.il/";
+        String cookieName = "students";
+
+        CookieManager cookieManager = CookieManager.getInstance();
+        String cookies = cookieManager.getCookie(siteName);
+        String[] temp=cookies.split(";");
+        for (String ar1 : temp ){
+            if(ar1.contains(cookieName)){
+                String[] temp1=ar1.split("=");
+                CookieValue = temp1[1];
+                break;
+            }
+        }
+        return CookieValue.equals("y");
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        CookieManager.getInstance().flush();//if user destroy the app still save cookies
     }
 }

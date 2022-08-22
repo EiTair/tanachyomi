@@ -11,4 +11,5 @@
     <string name="important_dialog_title">Important Information</string>
     <string name="important_dialogText">On some cell phones <b>in order for the alerts to work after the cell phone is turned off </b>, the \"Autostart\" option must be activated in the app info.</string>
     <string name="for_info_important_dialog">Go to \"app Info\"</string>
+    <string name="isStudent">Notifications matching the student program</string>
 </resources>
