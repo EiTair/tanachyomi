@@ -14,8 +14,8 @@ public class ParekYomiCalculator {
                     "ראש השנה", "סוכות", "שמיני עצרת", "יום כיפור", "פורים", "יום העצמאות"));
 
 
-    public String getParekYomi(JewishCalendar todayDate) {
-        boolean isStudent = MainActivity.getIfStudent();
+    public String getParekYomi(Boolean isStudent) {
+        JewishCalendar todayDate = new JewishCalendar();
         //כדי לקבל הכל בעברית
         HebrewDateFormatter hebrewDateFormatter = new HebrewDateFormatter();
         hebrewDateFormatter.setHebrewFormat(true);
@@ -24,45 +24,45 @@ public class ParekYomiCalculator {
         int countDays = 0;//סופר את הימים שקוראים בהם
 
 
-            //אם היום הנוכחי הוא חודש שלא קוראים בו אז אני מחזיר כבר ערך
-            if (holidays.contains(hebrewDateFormatter.formatYomTov(todayDate))) {
-                return "היום " + hebrewDateFormatter.formatYomTov(todayDate) + " לכן לא קוראים היום";
-            }
+        //אם היום הנוכחי הוא חודש שלא קוראים בו אז אני מחזיר כבר ערך
+        if (holidays.contains(hebrewDateFormatter.formatYomTov(todayDate))) {
+            return "היום " + hebrewDateFormatter.formatYomTov(todayDate) + " לכן לא קוראים היום";
+        }
 
 
-            int extraDays;//הימים הנוספים ללא הימים שנוספים מהחודש מעובר
-            //בודק אם מדובר לפני כג תשרי ואז מראה שמדובר בסבב של שנה קודמת
-            if (todayDate.getJewishMonth() == 7 && todayDate.getJewishDayOfMonth() < 23) {
-                todayDate.setJewishYear(todayDate.getJewishYear() - 1);
-            }
-            //מקבל 0-4 תלוי כמה ימים נופלים על שבתות
-            extraDays = (isStudent)?0:getExtraDays(todayDate);
+        int extraDays;//הימים הנוספים ללא הימים שנוספים מהחודש מעובר
+        //בודק אם מדובר לפני כג תשרי ואז מראה שמדובר בסבב של שנה קודמת
+        if (todayDate.getJewishMonth() == 7 && todayDate.getJewishDayOfMonth() < 23) {
+            todayDate.setJewishYear(todayDate.getJewishYear() - 1);
+        }
+        //מקבל 0-4 תלוי כמה ימים נופלים על שבתות
+        extraDays = (isStudent) ? 0 : getExtraDays(todayDate);
 
-            //רץ על כל הספרים מספר הפרקים שבו
-            for (int i = 0; i < sfarim.length - 1; i++) {
-                for (int j = 0; j < howMuchinSefer[i]; j++) {
-                    //לפי מספר הימים שצריך להוסיף את מחכה לפרק ואז מוסיף מה שמוסיף
-                    //בכוונה גדול אחד מהשני כי כך יכול לרוץ על כמה
-                    if (sfarim[i].equals("רות") && extraDays > 0) {
-                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
-                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
-                    } else if (sfarim[i].equals("שיר השירים") && extraDays > 1) {
-                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
-                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
+        //רץ על כל הספרים מספר הפרקים שבו
+        for (int i = 0; i < sfarim.length - 1; i++) {
+            for (int j = 0; j < howMuchinSefer[i]; j++) {
+                //לפי מספר הימים שצריך להוסיף את מחכה לפרק ואז מוסיף מה שמוסיף
+                //בכוונה גדול אחד מהשני כי כך יכול לרוץ על כמה
+                if (sfarim[i].equals("רות") && extraDays > 0) {
+                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
+                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
+                } else if (sfarim[i].equals("שיר השירים") && extraDays > 1) {
+                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
+                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
 
-                    } else if (sfarim[i].equals("ירמיהו") && extraDays > 2 && j == 8) {
-                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
-                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
+                } else if (sfarim[i].equals("ירמיהו") && extraDays > 2 && j == 8) {
+                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
+                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
 
-                    } else if (sfarim[i].equals("יהושע") && extraDays > 3 && j == 3) {
-                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
-                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
+                } else if (sfarim[i].equals("יהושע") && extraDays > 3 && j == 3) {
+                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "1");
+                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1) + "2");
 
-                    } else {
-                        allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1));
-                    }
+                } else {
+                    allPrakim.add("" + sfarim[i] + " " + hebrewDateFormatter.formatHebrewNumber(j + 1));
                 }
             }
+        }
 
 
         if (!isStudent) {
@@ -88,23 +88,24 @@ public class ParekYomiCalculator {
                 }
                 beginningsDate.forward(Calendar.DAY_OF_MONTH, 1);
             }
-        }else {
+        } else {
+            Calendar todayGer = Calendar.getInstance();
             Calendar beginningsDate = Calendar.getInstance();
-            beginningsDate.set((beginningsDate.get(Calendar.MONTH) < 9) ? beginningsDate.get(Calendar.YEAR) - 1 : beginningsDate.get(Calendar.YEAR), 9, 1);
+            beginningsDate.set(beginningsDate.get(Calendar.YEAR), 8, 1,0,0,0);
 
-            while (!(beginningsDate.get(Calendar.MONTH) == todayDate.getGregorianCalendar().get(Calendar.MONTH)
-                    && beginningsDate.get(Calendar.DAY_OF_MONTH) == todayDate.getGregorianCalendar().get(Calendar.DAY_OF_MONTH))) {
+            while (!(beginningsDate.get(Calendar.MONTH) == todayGer.get(Calendar.MONTH)
+                    && beginningsDate.get(Calendar.DAY_OF_MONTH) == todayGer.get(Calendar.DAY_OF_MONTH))) {
 
                 if (!holidays.contains(hebrewDateFormatter.formatYomTov(new JewishCalendar(beginningsDate)))) {
                     countDays++;
                 }
-                beginningsDate.add(Calendar.DAY_OF_MONTH, 1);
+                beginningsDate.add(Calendar.DATE, 1);
             }
         }
 
         //מחזיר את הפרק לפי היום הימים שצריך לקרוא שספרנו
-        if (countDays>allPrakim.size()){
-            return "";
+        if (countDays > allPrakim.size()) {
+            return  "";
 
         }
         return "סדר הקריאה היומי הוא: " + allPrakim.get(countDays);

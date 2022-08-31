@@ -23,10 +23,10 @@ public class reminderBroadcast extends BroadcastReceiver {
         String mPreference = "mPreference";
         SharedPreferences sharedpreferences = context.getSharedPreferences(mPreference,
                 Context.MODE_PRIVATE);
-
+        boolean isStudent = sharedpreferences.getBoolean("students", false);
         if (sharedpreferences.getBoolean("toNotify", false)) {
-            if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && !MainActivity.getIfStudent()) {
-                String text = new ParekYomiCalculator().getParekYomi(new JewishCalendar());
+            if ( isStudent|| Calendar.getInstance().get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY ) {
+                String text = new ParekYomiCalculator().getParekYomi(isStudent);
                 if (!text.equals("")) {
                     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
                     Notification notification;

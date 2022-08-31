@@ -26,6 +26,9 @@ import hotchemi.android.rate.AppRate;
 
 
 public class MainActivity extends AppCompatActivity {
+    String mPreference = "mPreference";
+
+    SharedPreferences sharedpreferences;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -33,14 +36,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sharedpreferences = getSharedPreferences(mPreference,
+                Context.MODE_PRIVATE);
 
-
-        String mPreference = "mPreference";
         String mURL = "https://www.tanachyomi.co.il/";
 
 
-        SharedPreferences sharedpreferences = getSharedPreferences(mPreference,
-                Context.MODE_PRIVATE);
         findViewById(R.id.buttonToDonate).setOnClickListener(v -> {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.tanachyomi.co.il/%D7%AA%D7%A8%D7%95%D7%9E%D7%94_%D7%9C%D7%90%D7%AA%D7%A8"));
             startActivity(browserIntent);
@@ -190,6 +191,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putBoolean("students", getIfStudent());
+        editor.apply();
         CookieManager.getInstance().flush();//if user destroy the app still save cookies
     }
 }
