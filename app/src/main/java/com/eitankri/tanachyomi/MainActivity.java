@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,9 +21,21 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.InstallStateUpdatedListener;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.InstallStatus;
+import com.google.android.play.core.install.model.UpdateAvailability;
+import com.google.android.play.core.tasks.Task;
 
 import java.util.Calendar;
 
@@ -30,6 +43,10 @@ import hotchemi.android.rate.AppRate;
 
 
 public class MainActivity extends AppCompatActivity {
+    private AppUpdateManager appUpdateManager;
+    private InstallStateUpdatedListener installStateUpdatedListener;
+    private static final int FLEXIBLE_APP_UPDATE_REQ_CODE = 123;
+
     String mPreference = "mPreference";
 
     SharedPreferences sharedpreferences;
@@ -60,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animation animation) {
                 ((TextView) findViewById(R.id.textView8)).setText(R.string.loading);
+                tryUpdate();
 
             }
 
@@ -94,8 +112,6 @@ public class MainActivity extends AppCompatActivity {
         mWebView.getSettings().setDisplayZoomControls(false);
 
 
-
-
         mWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
@@ -105,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView wv, String url) {
-                if(url.startsWith("tel:") || url.startsWith("whatsapp:")) {
+                if (url.startsWith("tel:") || url.startsWith("whatsapp:")) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(url));
                     startActivity(intent);
@@ -113,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return false;
             }
+
             @Override
             public void onPageFinished(WebView view, String url) {
 
@@ -163,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
     //כדי ליחזור אחורה בדפדפן ולא באפליקציה
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -176,11 +192,7 @@ public class MainActivity extends AppCompatActivity {
                     new AlertDialog.Builder(this)
                             .setTitle("לסגור אפליקציה")
                             .setMessage("האם אתה בטוח  שאתה רוצה לצאת")
-                            .setPositiveButton("כן", (dialog, which) -> {
-
-                                finishAndRemoveTask();
-
-                            })
+                            .setPositiveButton("כן", (dialog, which) -> finishAndRemoveTask())
                             .setNegativeButton("לא", null)
                             .show();
                     //נמצא כדי להיות לפני הדיאלוג ששלעיל
@@ -197,6 +209,83 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
+    /**
+     * -------------------------------for update----------------------
+     */
+    private void tryUpdate() {
+        appUpdateManager = AppUpdateManagerFactory.create(getApplicationContext());
+        installStateUpdatedListener = state -> {
+            if (state.installStatus() == InstallStatus.DOWNLOADED) {
+                popupSnackBarForCompleteUpdate();
+            } else if (state.installStatus() == InstallStatus.INSTALLED) {
+                removeInstallStateUpdateListener();
+            } else {
+//                Toast.makeText(getApplicationContext(), "InstallStateUpdatedListener: state: " + state.installStatus(), Toast.LENGTH_LONG).show();
+            }
+        };
+        appUpdateManager.registerListener(installStateUpdatedListener);
+        checkUpdate();
+    }
+
+    private void checkUpdate() {
+
+        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+
+        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() ==
+                    UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+                startUpdateFlow(appUpdateInfo);
+            } else if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                popupSnackBarForCompleteUpdate();
+            }
+        });
+    }
+
+    private void startUpdateFlow(AppUpdateInfo appUpdateInfo) {
+        try {
+            appUpdateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.FLEXIBLE, this, FLEXIBLE_APP_UPDATE_REQ_CODE);
+        } catch (IntentSender.SendIntentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void popupSnackBarForCompleteUpdate() {
+        Snackbar.make(findViewById(android.R.id.content).getRootView(), R.string.install_avaliable, Snackbar.LENGTH_INDEFINITE)
+
+                .setAction(R.string.install, view -> {
+                    if (appUpdateManager != null) {
+                        appUpdateManager.completeUpdate();
+
+                    }
+                })
+                .setActionTextColor(getResources().getColor(R.color.white))
+                .show();
+    }
+
+    private void removeInstallStateUpdateListener() {
+        if (appUpdateManager != null) {
+            appUpdateManager.unregisterListener(installStateUpdatedListener);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == FLEXIBLE_APP_UPDATE_REQ_CODE) {
+            if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(getApplicationContext(), "Update canceled by user!", Toast.LENGTH_LONG).show();
+            } else if (resultCode == RESULT_OK) {
+//                Toast.makeText(getApplicationContext(), "Update success!", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Update Failed!", Toast.LENGTH_LONG).show();
+//                tryUpdate();
+            }
+
+        }
+    }
+
 
     /**
      * -------------------------------for alarms----------------------
@@ -216,10 +305,11 @@ public class MainActivity extends AppCompatActivity {
                     , sharedpreferences.getInt("notifyHour", 0), sharedpreferences.getInt("notifyMinute", 1));
 
 
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, NotIntent,PendingIntent.FLAG_IMMUTABLE);
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, NotIntent, PendingIntent.FLAG_IMMUTABLE);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         }
     }
+
     public static boolean isAlarmUp(Context context, int request) {
         Intent myIntent = new Intent(context, reminderBroadcast.class);
         return PendingIntent.getBroadcast(context, request, myIntent, PendingIntent.FLAG_IMMUTABLE) != null;
@@ -246,23 +336,25 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-    public static Boolean getIfStudent(){
+
+    public static Boolean getIfStudent() {
         String CookieValue = "";
         String siteName = "https://www.tanachyomi.co.il/";
         String cookieName = "students";
 
         CookieManager cookieManager = CookieManager.getInstance();
         String cookies = cookieManager.getCookie(siteName);
-        String[] temp=cookies.split(";");
-        for (String ar1 : temp ){
-            if(ar1.contains(cookieName)){
-                String[] temp1=ar1.split("=");
+        String[] temp = cookies.split(";");
+        for (String ar1 : temp) {
+            if (ar1.contains(cookieName)) {
+                String[] temp1 = ar1.split("=");
                 CookieValue = temp1[1];
                 break;
             }
         }
         return CookieValue.equals("y");
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -270,5 +362,11 @@ public class MainActivity extends AppCompatActivity {
         editor.putBoolean("students", getIfStudent());
         editor.apply();
         CookieManager.getInstance().flush();//if user destroy the app still save cookies
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        removeInstallStateUpdateListener();
     }
 }
