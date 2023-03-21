@@ -12,10 +12,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,6 +42,36 @@ public class MainActivity extends AppCompatActivity {
 
         sharedpreferences = getSharedPreferences(mPreference,
                 Context.MODE_PRIVATE);
+
+
+        checkIfRecreateNotify();
+        ImageView imageView = findViewById(R.id.imageViewLogo);
+        //מכין את האנימציה
+        Animation anim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
+        //מתחיל את האנימציה בפועל
+        imageView.startAnimation(anim);
+        //מקשיב מתי האנימציה נגמרת
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                ((TextView) findViewById(R.id.textView8)).setText(R.string.loading);
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        //כאשר סוגרים את האפליקציה דרך המסך הראשי הוא עובר לכאן ומכאן שוב יוצא
+        if (getIntent().getBooleanExtra("EXIT", false)) {
+            finishAndRemoveTask();
+
+        }
 
         String mURL = "https://www.tanachyomi.co.il/";
 
@@ -67,16 +101,30 @@ public class MainActivity extends AppCompatActivity {
             i.setData(Uri.parse(url));
             startActivity(i);
         });
+
         mWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView wv, String url) {
+                if(url.startsWith("tel:") || url.startsWith("whatsapp:")) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                    return true;
+                }
+                return false;
+            }
             @Override
             public void onPageFinished(WebView view, String url) {
 
                 mWebView.loadUrl("javascript:(function() { " +
                         "document.getElementsByClassName(' hideOnLG')[0].style.display='none'; })()");
 
+                //make all loading invisible
                 findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
                 findViewById(R.id.view).setVisibility(View.INVISIBLE);
                 findViewById(R.id.textView8).setVisibility(View.INVISIBLE);
+                findViewById(R.id.imageViewLogo).setAlpha(0f);
+
                 findViewById(R.id.floatingActionButton).setVisibility(View.VISIBLE);
                 findViewById(R.id.buttonToDonate).setVisibility(View.VISIBLE);
                 if (sharedpreferences.getBoolean("firstTime", true)) {
@@ -103,12 +151,16 @@ public class MainActivity extends AppCompatActivity {
                     Dialog.show();
                 } else {
                     if (url.equals("https://www.tanachyomi.co.il/")) {
-                        mWebView.scrollBy(0, 2400);
+                        mWebView.loadUrl("javascript:document.getElementById('showDateHeader').scrollIntoView()");
+                        mWebView.loadUrl("javascript:window.scrollBy(0, -10)");
+
                     }
 
                 }
+
             }
         });
+
 
     }
 
@@ -126,11 +178,8 @@ public class MainActivity extends AppCompatActivity {
                             .setMessage("האם אתה בטוח  שאתה רוצה לצאת")
                             .setPositiveButton("כן", (dialog, which) -> {
 
+                                finishAndRemoveTask();
 
-                                Intent intent = new Intent(MainActivity.this, IntroActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                intent.putExtra("EXIT", true);
-                                startActivity(intent);
                             })
                             .setNegativeButton("לא", null)
                             .show();
@@ -149,6 +198,32 @@ public class MainActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    /**
+     * -------------------------------for alarms----------------------
+     */
+    private void checkIfRecreateNotify() {
+        Context context = getApplicationContext();
+        String mPreference = "mPreference";
+        SharedPreferences sharedpreferences = context.getSharedPreferences(mPreference,
+                Context.MODE_PRIVATE);
+
+        if (!isAlarmUp(context, 1)) {
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Intent NotIntent = new Intent(context, reminderBroadcast.class);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
+                    , sharedpreferences.getInt("notifyHour", 0), sharedpreferences.getInt("notifyMinute", 1));
+
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, NotIntent,PendingIntent.FLAG_IMMUTABLE);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
+        }
+    }
+    public static boolean isAlarmUp(Context context, int request) {
+        Intent myIntent = new Intent(context, reminderBroadcast.class);
+        return PendingIntent.getBroadcast(context, request, myIntent, PendingIntent.FLAG_IMMUTABLE) != null;
+    }
 
     /************************************end of main code**********************************************/
     public static class FirstTimeDialog extends Dialog {

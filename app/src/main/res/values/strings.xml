@@ -3,7 +3,7 @@
     <string name="setting">Setting</string>
     <string name="when_to_fire_alarm">When to notify</string>
     <string name="notification">Notification</string>
-    <string name="loading">loading</string>
+    <string name="loading">loading website…</string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_title">Welcome</string>
     <string name="dialogText">for reading all the tanah in one year according to masora, good luck!\n\nFor setting daily notification you need to click on ⚙ in the bottom of the screen</string>
