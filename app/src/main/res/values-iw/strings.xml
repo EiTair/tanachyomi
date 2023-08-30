@@ -4,7 +4,7 @@
     <string name="when_to_fire_alarm">מתי להפעיל התראה</string>
     <string name="notification" translatable="false">התראות</string>
     <string name="setting" translatable="false">הגדרות</string>
-    <string name="loading">טוען</string>
+    <string name="loading">טוען…</string>
     <string name="dialogText">ברכות על הצטרפותך לקריאת התנ"ך היומי
 סיום כל התנ"ך בשנה אחת - על פי המסורה\n
 בהצלחה!\n
@@ -18,6 +18,5 @@
     <string name="important_dialogText">בחלק מהפלפונים <b>כדי שההתראות יעבדו אחרי כיבוי של הפלאפון </b>צריך להפעיל את האופציה \"הפעלה אוטומטית\" בפרטי האפליקציה.</string>
     <string name="for_info_important_dialog">אל \"פרטי האפליקציה\"</string>
     <string name="isStudent">התראות מתואמות לתוכנית התלמידים</string>
-    <string name="not_allowed">ללא אישור אי אפשר לקבל התראות</string>
 
 </resources>

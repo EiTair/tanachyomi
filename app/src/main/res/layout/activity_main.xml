@@ -52,24 +52,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/imageViewLogo"
+        android:layout_width="352dp"
+        android:layout_height="212dp"
+        android:adjustViewBounds="true"
+        android:padding="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.29000002"
+        app:srcCompat="@drawable/logoforapp" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scaleX="2"
-        android:scaleY="2"
+        android:scaleX="1"
+        android:scaleY="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/imageViewLogo"
+        app:layout_constraintVertical_bias="0.100000024" />
 
     <TextView
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/loading"
+        android:layout_marginTop="24dp"
         android:textColor="@color/blue_400"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="@+id/progressBar"
