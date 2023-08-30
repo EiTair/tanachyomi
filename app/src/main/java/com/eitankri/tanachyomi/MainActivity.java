@@ -1,5 +1,6 @@
 package com.eitankri.tanachyomi;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -9,7 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,6 +29,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
@@ -46,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private AppUpdateManager appUpdateManager;
     private InstallStateUpdatedListener installStateUpdatedListener;
     private static final int FLEXIBLE_APP_UPDATE_REQ_CODE = 123;
+    private static final int NOTIFICATION_REQUEST_CODE = 1919;
 
     String mPreference = "mPreference";
 
@@ -145,6 +150,16 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.floatingActionButton).setVisibility(View.VISIBLE);
                 findViewById(R.id.buttonToDonate).setVisibility(View.VISIBLE);
                 if (sharedpreferences.getBoolean("firstTime", true)) {
+                    //see if needed premssion
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+                        if (ContextCompat.checkSelfPermission(
+                                MainActivity.this, android.Manifest.permission.POST_NOTIFICATIONS) ==
+                                PackageManager.PERMISSION_DENIED) {
+                            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_REQUEST_CODE);
+                        }
+
+                    }
                     AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                     Intent intent = new Intent(getApplicationContext(), reminderBroadcast.class);
                     PendingIntent pendingIntent;
@@ -180,6 +195,22 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case NOTIFICATION_REQUEST_CODE:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.not_allowed, Toast.LENGTH_SHORT).show();
+                }
+                return;
+        }
+    }
+
     //כדי ליחזור אחורה בדפדפן ולא באפליקציה
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
