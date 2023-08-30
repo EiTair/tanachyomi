@@ -1,24 +1,33 @@
 package com.eitankri.tanachyomi;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import java.util.Calendar;
 
@@ -27,6 +36,8 @@ import hotchemi.android.rate.AppRate;
 
 public class MainActivity extends AppCompatActivity {
     String mPreference = "mPreference";
+    private static final int NOTIFICATION_REQUEST_CODE = 1919;
+
 
     SharedPreferences sharedpreferences;
 
@@ -60,14 +71,13 @@ public class MainActivity extends AppCompatActivity {
         mWebView.getSettings().setDisplayZoomControls(false);
 
 
-
-
         mWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             startActivity(i);
         });
         mWebView.setWebViewClient(new WebViewClient() {
+
             @Override
             public void onPageFinished(WebView view, String url) {
 
@@ -80,27 +90,43 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.floatingActionButton).setVisibility(View.VISIBLE);
                 findViewById(R.id.buttonToDonate).setVisibility(View.VISIBLE);
                 if (sharedpreferences.getBoolean("firstTime", true)) {
-                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    Intent intent = new Intent(getApplicationContext(), reminderBroadcast.class);
-                    PendingIntent pendingIntent;
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0, 1, 0);
-                    //כדי שלא תקפוץ התראה שפותח פעם ראשונה
-                    calendar.add(Calendar.DAY_OF_MONTH, 1);
 
-                    pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, PendingIntent.FLAG_IMMUTABLE);
-                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-
-
-                    SharedPreferences.Editor editor = sharedpreferences.edit();
-                    editor.putInt("notifyHour", 0);
-                    editor.putInt("notifyMinute", 1);
-                    editor.putBoolean("firstTime", false);
-                    editor.putBoolean("toNotify", true);
-                    editor.apply();
 
                     FirstTimeDialog Dialog = new FirstTimeDialog(MainActivity.this);
                     Dialog.show();
+                    Dialog.setOnDismissListener(dialog -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+                            if (ContextCompat.checkSelfPermission(
+                                    MainActivity.this, Manifest.permission.POST_NOTIFICATIONS) ==
+                                    PackageManager.PERMISSION_DENIED) {
+                                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_REQUEST_CODE);
+                            }
+
+                        }
+
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+                        Intent intent = new Intent(getApplicationContext(), reminderBroadcast.class);
+                        PendingIntent pendingIntent;
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0, 1, 0);
+                        //כדי שלא תקפוץ התראה שפותח פעם ראשונה
+                        calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+                        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, PendingIntent.FLAG_IMMUTABLE);
+                        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+
+
+                        SharedPreferences.Editor editor = sharedpreferences.edit();
+                        editor.putInt("notifyHour", 0);
+                        editor.putInt("notifyMinute", 1);
+                        editor.putBoolean("firstTime", false);
+                        editor.putBoolean("toNotify", true);
+                        editor.apply();
+                    });
+
+
                 } else {
                     if (url.equals("https://www.tanachyomi.co.il/")) {
                         mWebView.scrollBy(0, 2400);
@@ -111,6 +137,23 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case NOTIFICATION_REQUEST_CODE:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.not_allowed, Toast.LENGTH_SHORT).show();
+                }
+                return;
+        }
+    }
+
 
     //כדי ליחזור אחורה בדפדפן ולא באפליקציה
     @Override
@@ -170,24 +213,27 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+
     }
-    public static Boolean getIfStudent(){
+
+    public static Boolean getIfStudent() {
         String CookieValue = "";
         String siteName = "https://www.tanachyomi.co.il/";
         String cookieName = "students";
 
         CookieManager cookieManager = CookieManager.getInstance();
         String cookies = cookieManager.getCookie(siteName);
-        String[] temp=cookies.split(";");
-        for (String ar1 : temp ){
-            if(ar1.contains(cookieName)){
-                String[] temp1=ar1.split("=");
+        String[] temp = cookies.split(";");
+        for (String ar1 : temp) {
+            if (ar1.contains(cookieName)) {
+                String[] temp1 = ar1.split("=");
                 CookieValue = temp1[1];
                 break;
             }
         }
         return CookieValue.equals("y");
     }
+
     @Override
     protected void onPause() {
         super.onPause();

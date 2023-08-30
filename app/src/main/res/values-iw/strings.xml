@@ -8,7 +8,8 @@
     <string name="dialogText">ברכות על הצטרפותך לקריאת התנ"ך היומי
 סיום כל התנ"ך בשנה אחת - על פי המסורה\n
 בהצלחה!\n
-        \n\nלשם הגדרת תזכורת יומית יש ללחוץ על ⚙ בתחתית המסך
+        \nלשם הגדרת תזכורת יומית יש ללחוץ על ⚙ בתחתית המסך
+        כדי לקבל התראות חייב לתת הרשאה!
     </string>
     <string name="dialog_ok">בסדר</string>
     <string name="dialog_title">ברוכים הבאים</string>
@@ -17,5 +18,6 @@
     <string name="important_dialogText">בחלק מהפלפונים <b>כדי שההתראות יעבדו אחרי כיבוי של הפלאפון </b>צריך להפעיל את האופציה \"הפעלה אוטומטית\" בפרטי האפליקציה.</string>
     <string name="for_info_important_dialog">אל \"פרטי האפליקציה\"</string>
     <string name="isStudent">התראות מתואמות לתוכנית התלמידים</string>
+    <string name="not_allowed">ללא אישור אי אפשר לקבל התראות</string>
 
 </resources>

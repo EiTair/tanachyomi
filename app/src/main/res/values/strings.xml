@@ -6,10 +6,11 @@
     <string name="loading">loading</string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_title">Welcome</string>
-    <string name="dialogText">for reading all the tanah in one year according to masora, good luck!\n\nFor setting daily notification you need to click on ⚙ in the bottom of the screen</string>
+    <string name="dialogText">for reading all the tanah in one year according to masora, good luck!\n\nFor setting daily notification you need to click on ⚙ in the bottom of the screen\n for notification you have to allow notification</string>
     <string name="Important_massage"><u>Important Information!</u></string>
     <string name="important_dialog_title">Important Information</string>
     <string name="important_dialogText">On some cell phones <b>in order for the alerts to work after the cell phone is turned off </b>, the \"Autostart\" option must be activated in the app info.</string>
     <string name="for_info_important_dialog">Go to \"app Info\"</string>
     <string name="isStudent">Notifications matching the student program</string>
+    <string name="not_allowed">Need premssion for notification</string>
 </resources>
