@@ -376,6 +376,8 @@ public class MainActivity extends AppCompatActivity {
 
         CookieManager cookieManager = CookieManager.getInstance();
         String cookies = cookieManager.getCookie(siteName);
+        if (cookies == null)
+            return false;
         String[] temp = cookies.split(";");
         for (String ar1 : temp) {
             if (ar1.contains(cookieName)) {
