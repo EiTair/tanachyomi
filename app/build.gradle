@@ -11,8 +11,8 @@ android {
         applicationId "com.eitankri.tanachyomi"
         minSdkVersion 23
         targetSdkVersion 36
-        versionCode 21
-        versionName '1.1.9'
+        versionCode 22
+        versionName '1.1.10'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

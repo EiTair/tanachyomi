@@ -15,5 +15,6 @@
     <string name="not_allowed">Need permission for notification</string>
     <string name="install_avaliable">Install new update</string>
     <string name="install">Install</string>
+    <string name="donate_button_text">Recognized donation</string>
 
 </resources>

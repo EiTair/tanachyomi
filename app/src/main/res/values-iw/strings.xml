@@ -21,5 +21,6 @@
     <string name="not_allowed">ללא אישור אי אפשר לקבל התראות</string>
     <string name="install_avaliable">התקן עדכון חדש</string>
     <string name="install">התקן</string>
+    <string name="donate_button_text">לתרומה מוכרת (סעיף 46)</string>
 
 </resources>
