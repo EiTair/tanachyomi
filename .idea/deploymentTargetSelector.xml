@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-11-03T08:56:40.095647693Z">
+        <DropdownSelection timestamp="2025-11-06T13:53:19.298012524Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/home/eythan/.config/.android/avd/Medium_Phone.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/home/eythan/.config/.android/avd/sumsung_A24.avd" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -15,17 +15,22 @@
           <targets>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=/home/eitan/.android/avd/Pixel_7_Pro_API_36.avd" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=/home/eythan/.config/.android/avd/Resizable_Experimental.avd" />
               </handle>
             </Target>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=/home/eitan/.android/avd/Pixel_7_Pro_API_35.avd" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=/home/eythan/.config/.android/avd/Small_Phone.avd" />
               </handle>
             </Target>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=/home/eitan/.android/avd/Pixel_7_Pro_API_34.avd" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=/home/eythan/.config/.android/avd/Medium_Phone.avd" />
+              </handle>
+            </Target>
+            <Target type="DEFAULT_BOOT">
+              <handle>
+                <DeviceId pluginId="LocalEmulator" identifier="path=/home/eythan/.config/.android/avd/sumsung_A24.avd" />
               </handle>
             </Target>
           </targets>
