@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -207,6 +208,31 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        // מאזין לאירוע חזרה חדש
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (mWebView.canGoBack()) {
+                    mWebView.goBack();
+                } else {
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("לסגור אפליקציה")
+                            .setMessage("האם אתה בטוח שאתה רוצה לצאת?")
+                            .setPositiveButton("כן", (dialog, which) -> finishAndRemoveTask())
+                            .setNegativeButton("לא", null)
+                            .show();
+
+                    // מדרג את האפליקציה (כמו קודם)
+                    AppRate.with(MainActivity.this)
+                            .setInstallDays(2)
+                            .setLaunchTimes(10)
+                            .setRemindInterval(3)
+                            .monitor();
+                    AppRate.showRateDialogIfMeetsConditions(MainActivity.this);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -224,35 +250,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //כדי ליחזור אחורה בדפדפן ולא באפליקציה
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        WebView mWebView = findViewById(R.id.webViewMikveSearch);
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if (mWebView.canGoBack()) {
-                    mWebView.goBack();
-                } else {
-                    new AlertDialog.Builder(this)
-                            .setTitle("לסגור אפליקציה")
-                            .setMessage("האם אתה בטוח  שאתה רוצה לצאת")
-                            .setPositiveButton("כן", (dialog, which) -> finishAndRemoveTask())
-                            .setNegativeButton("לא", null)
-                            .show();
-                    //נמצא כדי להיות לפני הדיאלוג ששלעיל
-                    //מדרג את האפליקציה
-                    AppRate.with(this)
-                            .setInstallDays(2)
-                            .setLaunchTimes(10)
-                            .setRemindInterval(3)
-                            .monitor();
-                    AppRate.showRateDialogIfMeetsConditions(this);
-                }
-                return true;
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
 
     /**
      * -------------------------------for update----------------------

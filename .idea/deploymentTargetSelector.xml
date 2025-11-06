@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-11-06T13:53:19.298012524Z">
+        <DropdownSelection timestamp="2025-11-06T13:59:18.914464170Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/home/eythan/.config/.android/avd/sumsung_A24.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/home/eythan/.config/.android/avd/sumsung_A26.avd" />
             </handle>
           </Target>
         </DropdownSelection>
