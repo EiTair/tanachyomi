@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="mTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- Changed parent to MaterialComponents.DayNight to enable proper Dark Mode colors -->
+    <style name="mTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">#29B6F6</item>
         <item name="colorPrimaryDark">#039BE5</item>
         <item name="colorAccent">#67CCFA</item>
