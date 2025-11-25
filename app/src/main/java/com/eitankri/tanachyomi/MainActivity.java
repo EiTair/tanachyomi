@@ -19,6 +19,8 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.CookieManager;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -125,17 +127,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
         WebView mWebView = findViewById(R.id.webViewMikveSearch);
-        mWebView.loadUrl(mURL);
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.getSettings().setBuiltInZoomControls(true);
-        mWebView.getSettings().setDisplayZoomControls(false);
 
+        WebSettings settings = mWebView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
+        settings.setLoadsImagesAutomatically(true);
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
+        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
 
-        mWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
-        });
+        mWebView.setWebChromeClient(new WebChromeClient());
 
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
@@ -155,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
                 mWebView.loadUrl("javascript:(function() { " +
                         "document.getElementsByClassName(' hideOnLG')[0].style.display='none'; })()");
 
-                //make all loading invisible
                 findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
                 findViewById(R.id.view).setVisibility(View.INVISIBLE);
                 findViewById(R.id.textView8).setVisibility(View.INVISIBLE);
@@ -163,6 +164,8 @@ public class MainActivity extends AppCompatActivity {
 
                 findViewById(R.id.floatingActionButton).setVisibility(View.VISIBLE);
                 findViewById(R.id.buttonToDonate).setVisibility(View.VISIBLE);
+
+
                 if (sharedpreferences.getBoolean("firstTime", true)) {
                     //see if needed premssion
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -206,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        mWebView.loadUrl(mURL);
 
 
         // מאזין לאירוע חזרה חדש
